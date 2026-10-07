@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raumbuchung — Tagesansicht</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header" data-od-id="app-header">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" data-od-id="wordmark">Raumbuchung</a>
+      <nav class="main-nav" aria-label="Hauptnavigation" data-od-id="main-nav">
+        <a class="nav-item active" href="index.html" aria-current="page" data-od-id="nav-rooms">Räume</a>
+        <a class="nav-item" href="freie-raeume.html" data-od-id="nav-free-rooms">Freie Räume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page" id="main" data-od-id="day-view-main">
+    <a class="btn btn-ghost" href="index.html" data-od-id="back-to-rooms">‹ Zurück zur Raumliste</a>
+
+    <h1 class="page-title" id="room-title" data-od-id="day-room-title">Besprechung Nord</h1>
+    <p class="page-subtitle" data-od-id="day-subtitle">Tagesansicht · <span class="num">8 Plätze</span></p>
+
+    <section class="day-view-header" aria-label="Tag wählen" data-od-id="day-view-header">
+      <div class="day-nav" data-od-id="day-nav">
+        <button class="icon-btn" type="button" aria-label="Vorheriger Tag" id="prev-day" data-od-id="prev-day">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="day-date-label" id="date-label" data-od-id="date-label">Mi, 11.03.2026</span>
+        <button class="icon-btn" type="button" aria-label="Nächster Tag" id="next-day" data-od-id="next-day">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="day-controls" data-od-id="day-controls">
+          <button class="btn btn-secondary" type="button" id="today-btn" data-od-id="today-btn">Heute</button>
+          <input class="day-jump" type="date" id="date-jump" aria-label="Zu Datum springen" data-od-id="date-jump">
+        </div>
+      </div>
+      <div class="day-room-line" data-od-id="day-room-line">
+        <span class="room-name-strong" id="day-room-name">Besprechung Nord</span>
+        <span aria-hidden="true">·</span>
+        <span>Alle Zeiten in Europe/Berlin</span>
+      </div>
+    </section>
+
+    <section class="day-list-card" aria-label="Buchungen des Tages" data-od-id="day-list-card">
+      <div id="bookings-container" data-od-id="bookings-container"></div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var ROOMS = {
+        'Besprechung Nord': '8 Plätze',
+        'Konferenzraum': '12 Plätze',
+        'Meetingbox': '4 Plätze',
+        'Kreativraum': '6 Plätze',
+        'Fokusraum': '2 Plätze',
+        'Telefonzelle': '1 Platz'
+      };
+
+      var BOOKINGS = {
+        '2026-03-11': [
+          { start: '09:00', end: '11:00', title: 'Sprint Planning', by: 'Anna', duration: '2 Std.', locked: true },
+          { start: '11:00', end: '12:30', title: 'Bewerbungsgespräch', by: 'Markus', duration: '1 Std. 30 Min.', locked: false },
+          { start: '13:00', end: '14:00', title: '1:1 Review', by: 'Lena', duration: '1 Std.', locked: false },
+          { start: '15:00', end: '17:00', title: 'Kunden-Workshop', by: 'Jonas', duration: '2 Std.', locked: false }
+        ],
+        '2026-03-12': [
+          { start: '10:00', end: '11:00', title: 'Onboarding', by: 'Paula', duration: '1 Std.', locked: false },
+          { start: '14:00', end: '15:30', title: 'Quartals-Review', by: 'Tim', duration: '1 Std. 30 Min.', locked: false }
+        ]
+      };
+
+      var WEEKDAYS = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+      var MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+      var TODAY = '2026-03-11';
+
+      var params = new URLSearchParams(window.location.search);
+      var roomName = params.get('raum') || 'Besprechung Nord';
+      if (!ROOMS[roomName]) roomName = 'Besprechung Nord';
+
+      document.getElementById('room-title').textContent = roomName;
+      document.getElementById('day-room-name').textContent = roomName;
+      var seats = ROOMS[roomName];
+      var subtitle = document.getElementById('day-subtitle');
+      subtitle.innerHTML = 'Tagesansicht · <span class="num">' + seats + '</span>';
+      document.title = 'Raumbuchung — ' + roomName;
+
+      function parseDate(s) {
+        var parts = s.split('-');
+        return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      }
+
+      function formatDate(d) {
+        return d.getFullYear() + '-' + MONTHS[d.getMonth()] + '-' + ('0' + d.getDate()).slice(-2);
+      }
+
+      function formatLabel(d) {
+        return WEEKDAYS[d.getDay()] + ', ' + ('0' + d.getDate()).slice(-2) + '.' + MONTHS[d.getMonth()] + '.' + d.getFullYear();
+      }
+
+      var current = parseDate(TODAY);
+      var dateLabel = document.getElementById('date-label');
+      var dateJump = document.getElementById('date-jump');
+      var container = document.getElementById('bookings-container');
+      var displayItems = [];
+
+      function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function lockIcon() {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+      }
+
+      function renderSkeleton() {
+        container.innerHTML =
+          '<div class="skeleton-row" aria-hidden="true"></div>' +
+          '<div class="skeleton-row" aria-hidden="true"></div>' +
+          '<div class="skeleton-row" aria-hidden="true"></div>';
+      }
+
+      function renderList(items) {
+        if (!items || items.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state" data-od-id="day-empty">' +
+              '<svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' +
+              '<p class="empty-title">Keine Buchungen an diesem Tag</p>' +
+              '<p class="empty-body">Dieser Raum ist am gewählten Tag noch frei.</p>' +
+              '<a class="btn btn-primary" href="buchung.html?raum=' + encodeURIComponent(roomName) + '&datum=' + formatDate(current) + '">Raum buchen</a>' +
+            '</div>';
+          return;
+        }
+
+        var html = '';
+        items.forEach(function (b, i) {
+          var locked = b.locked;
+          html += '<div class="booking-list-item' + (locked ? ' locked' : '') + '" data-od-id="booking-item-' + i + '">';
+          html += '<span class="booking-time">' + b.start + ' – ' + b.end + '</span>';
+          html += '<div class="booking-info">';
+          html += '<div class="booking-title">' + escapeHtml(b.title) + '</div>';
+          if (locked) {
+            html += '<div class="lock-badge">' + lockIcon() + ' Bereits begonnen — nicht mehr änderbar</div>';
+          } else {
+            html += '<div class="booking-by">gebucht von ' + escapeHtml(b.by) + '</div>';
+          }
+          html += '</div>';
+          if (!locked) {
+            html += '<div class="booking-row-actions">';
+            html += '<a class="btn btn-secondary" href="buchung.html?raum=' + encodeURIComponent(roomName) + '&edit=1&datum=' + formatDate(current) + '&start=' + b.start + '" data-od-id="edit-booking-' + i + '">Bearbeiten</a>';
+            html += '<button class="btn btn-destructive" type="button" data-delete-idx="' + i + '" data-od-id="delete-booking-' + i + '" aria-label="Buchung löschen" title="Buchung löschen">Löschen</button>';
+            html += '</div>';
+          }
+          html += '<span class="booking-duration">' + b.duration + '</span>';
+          html += '</div>';
+        });
+        container.innerHTML = html;
+      }
+
+      function reload() {
+        dateLabel.textContent = formatLabel(current);
+        dateJump.value = formatDate(current);
+        var key = formatDate(current);
+        displayItems = (BOOKINGS[key] || []).map(function (b) { return Object.assign({}, b); });
+        renderSkeleton();
+        setTimeout(function () {
+          renderList(displayItems);
+        }, 300);
+      }
+
+      function deleteBooking(idx) {
+        displayItems.splice(idx, 1);
+        renderList(displayItems);
+      }
+
+      container.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-delete-idx]');
+        if (!btn) return;
+        var idx = parseInt(btn.getAttribute('data-delete-idx'), 10);
+        var item = displayItems[idx];
+        if (window.confirm('Buchung „' + item.title + '“ wirklich löschen?')) {
+          deleteBooking(idx);
+        }
+      });
+
+      document.getElementById('prev-day').addEventListener('click', function () {
+        current.setDate(current.getDate() - 1);
+        reload();
+      });
+
+      document.getElementById('next-day').addEventListener('click', function () {
+        current.setDate(current.getDate() + 1);
+        reload();
+      });
+
+      document.getElementById('today-btn').addEventListener('click', function () {
+        current = parseDate(TODAY);
+        reload();
+      });
+
+      dateJump.addEventListener('change', function () {
+        if (dateJump.value) {
+          current = parseDate(dateJump.value);
+          reload();
+        }
+      });
+
+      reload();
+    })();
+  </script>
+</body>
+</html>

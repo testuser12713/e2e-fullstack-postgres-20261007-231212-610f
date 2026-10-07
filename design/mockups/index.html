@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raumbuchung — Räume</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header" data-od-id="app-header">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" data-od-id="wordmark">Raumbuchung</a>
+      <nav class="main-nav" aria-label="Hauptnavigation" data-od-id="main-nav">
+        <a class="nav-item active" href="index.html" aria-current="page" data-od-id="nav-rooms">Räume</a>
+        <a class="nav-item" href="freie-raeume.html" data-od-id="nav-free-rooms">Freie Räume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page" id="main" data-od-id="room-list-main">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <div>
+        <h1 class="page-title" data-od-id="page-title">Räume</h1>
+        <p class="page-subtitle" data-od-id="page-subtitle">Alle Räume des Büros auf einen Blick.</p>
+      </div>
+      <button class="btn btn-secondary btn-coming-soon" disabled
+              title="Das Anlegen von Räumen ist noch nicht verfügbar."
+              data-od-id="create-room-coming-soon">
+        Raum anlegen <span class="coming-soon-label">kommt bald</span>
+      </button>
+    </div>
+
+    <section class="section" aria-label="Räume nach Ausstattung filtern" data-od-id="amenity-filter-section">
+      <div class="amenity-filter" role="group" aria-label="Ausstattung" data-od-id="amenity-filter">
+        <button class="filter-chip selected" type="button" data-value="alle" aria-pressed="true" data-od-id="filter-alle">Alle</button>
+        <button class="filter-chip" type="button" data-value="beamer" aria-pressed="false" data-od-id="filter-beamer">Beamer</button>
+        <button class="filter-chip" type="button" data-value="whiteboard" aria-pressed="false" data-od-id="filter-whiteboard">Whiteboard</button>
+        <button class="filter-chip" type="button" data-value="videokonferenz" aria-pressed="false" data-od-id="filter-videokonferenz">Videokonferenz</button>
+        <button class="filter-chip" type="button" data-value="konferenztelefon" aria-pressed="false" data-od-id="filter-konferenztelefon">Konferenztelefon</button>
+        <button class="filter-chip" type="button" data-value="flipchart" aria-pressed="false" data-od-id="filter-flipchart">Flipchart</button>
+        <button class="filter-chip" type="button" data-value="stehtisch" aria-pressed="false" data-od-id="filter-stehtisch">Stehtisch</button>
+        <button class="filter-chip" type="button" data-value="sofa" aria-pressed="false" data-od-id="filter-sofa">Sofa</button>
+        <button class="filter-chip" type="button" data-value="monitor" aria-pressed="false" data-od-id="filter-monitor">Monitor</button>
+        <button class="filter-chip" type="button" data-value="hoehenverstellbar" aria-pressed="false" data-od-id="filter-hoehenverstellbar">Höhenverstellbarer Tisch</button>
+        <button class="filter-chip" type="button" data-value="telefon" aria-pressed="false" data-od-id="filter-telefon">Telefon</button>
+      </div>
+
+      <p class="result-count" aria-live="polite" data-od-id="result-count">
+        <span class="num" id="result-count-num">6</span> Räume
+      </p>
+    </section>
+
+    <section class="room-grid" aria-label="Raumliste" data-od-id="room-grid">
+      <article class="room-card" data-amenities="beamer whiteboard konferenztelefon" data-od-id="room-card-besprechung-nord">
+        <a class="room-name" href="raum.html?raum=Besprechung%20Nord" data-od-id="room-name-besprechung-nord">Besprechung Nord</a>
+        <div class="room-seats" data-od-id="room-seats-besprechung-nord">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="num">8 Plätze</span>
+        </div>
+        <div class="room-tags" data-od-id="room-tags-besprechung-nord">
+          <span class="amenity-tag">Beamer</span>
+          <span class="amenity-tag">Whiteboard</span>
+          <span class="amenity-tag">Konferenztelefon</span>
+        </div>
+        <div class="room-actions" data-od-id="room-actions-besprechung-nord">
+          <a class="btn btn-primary" href="buchung.html?raum=Besprechung%20Nord" data-od-id="book-besprechung-nord">Buchen</a>
+          <a class="btn btn-secondary" href="raum.html?raum=Besprechung%20Nord" data-od-id="view-besprechung-nord">Tag ansehen</a>
+        </div>
+      </article>
+
+      <article class="room-card" data-amenities="beamer videokonferenz whiteboard flipchart" data-od-id="room-card-konferenzraum">
+        <a class="room-name" href="raum.html?raum=Konferenzraum" data-od-id="room-name-konferenzraum">Konferenzraum</a>
+        <div class="room-seats" data-od-id="room-seats-konferenzraum">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="num">12 Plätze</span>
+        </div>
+        <div class="room-tags" data-od-id="room-tags-konferenzraum">
+          <span class="amenity-tag">Beamer</span>
+          <span class="amenity-tag">Videokonferenz</span>
+          <span class="amenity-tag">Whiteboard</span>
+          <span class="amenity-tag">Flipchart</span>
+        </div>
+        <div class="room-actions" data-od-id="room-actions-konferenzraum">
+          <a class="btn btn-primary" href="buchung.html?raum=Konferenzraum" data-od-id="book-konferenzraum">Buchen</a>
+          <a class="btn btn-secondary" href="raum.html?raum=Konferenzraum" data-od-id="view-konferenzraum">Tag ansehen</a>
+        </div>
+      </article>
+
+      <article class="room-card" data-amenities="whiteboard stehtisch" data-od-id="room-card-meetingbox">
+        <a class="room-name" href="raum.html?raum=Meetingbox" data-od-id="room-name-meetingbox">Meetingbox</a>
+        <div class="room-seats" data-od-id="room-seats-meetingbox">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="num">4 Plätze</span>
+        </div>
+        <div class="room-tags" data-od-id="room-tags-meetingbox">
+          <span class="amenity-tag">Whiteboard</span>
+          <span class="amenity-tag">Stehtisch</span>
+        </div>
+        <div class="room-actions" data-od-id="room-actions-meetingbox">
+          <a class="btn btn-primary" href="buchung.html?raum=Meetingbox" data-od-id="book-meetingbox">Buchen</a>
+          <a class="btn btn-secondary" href="raum.html?raum=Meetingbox" data-od-id="view-meetingbox">Tag ansehen</a>
+        </div>
+      </article>
+
+      <article class="room-card" data-amenities="whiteboard beamer sofa" data-od-id="room-card-kreativraum">
+        <a class="room-name" href="raum.html?raum=Kreativraum" data-od-id="room-name-kreativraum">Kreativraum</a>
+        <div class="room-seats" data-od-id="room-seats-kreativraum">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="num">6 Plätze</span>
+        </div>
+        <div class="room-tags" data-od-id="room-tags-kreativraum">
+          <span class="amenity-tag">Whiteboard</span>
+          <span class="amenity-tag">Beamer</span>
+          <span class="amenity-tag">Sofa</span>
+        </div>
+        <div class="room-actions" data-od-id="room-actions-kreativraum">
+          <a class="btn btn-primary" href="buchung.html?raum=Kreativraum" data-od-id="book-kreativraum">Buchen</a>
+          <a class="btn btn-secondary" href="raum.html?raum=Kreativraum" data-od-id="view-kreativraum">Tag ansehen</a>
+        </div>
+      </article>
+
+      <article class="room-card" data-amenities="monitor hoehenverstellbar" data-od-id="room-card-fokusraum">
+        <a class="room-name" href="raum.html?raum=Fokusraum" data-od-id="room-name-fokusraum">Fokusraum</a>
+        <div class="room-seats" data-od-id="room-seats-fokusraum">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="num">2 Plätze</span>
+        </div>
+        <div class="room-tags" data-od-id="room-tags-fokusraum">
+          <span class="amenity-tag">Monitor</span>
+          <span class="amenity-tag">Höhenverstellbarer Tisch</span>
+        </div>
+        <div class="room-actions" data-od-id="room-actions-fokusraum">
+          <a class="btn btn-primary" href="buchung.html?raum=Fokusraum" data-od-id="book-fokusraum">Buchen</a>
+          <a class="btn btn-secondary" href="raum.html?raum=Fokusraum" data-od-id="view-fokusraum">Tag ansehen</a>
+        </div>
+      </article>
+
+      <article class="room-card" data-amenities="telefon" data-od-id="room-card-telefonzelle">
+        <a class="room-name" href="raum.html?raum=Telefonzelle" data-od-id="room-name-telefonzelle">Telefonzelle</a>
+        <div class="room-seats" data-od-id="room-seats-telefonzelle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="num">1 Platz</span>
+        </div>
+        <div class="room-tags" data-od-id="room-tags-telefonzelle">
+          <span class="amenity-tag">Telefon</span>
+        </div>
+        <div class="room-actions" data-od-id="room-actions-telefonzelle">
+          <a class="btn btn-primary" href="buchung.html?raum=Telefonzelle" data-od-id="book-telefonzelle">Buchen</a>
+          <a class="btn btn-secondary" href="raum.html?raum=Telefonzelle" data-od-id="view-telefonzelle">Tag ansehen</a>
+        </div>
+      </article>
+    </section>
+
+    <div class="empty-state" id="empty-results" hidden data-od-id="empty-results">
+      <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <p class="empty-title">Keine Räume mit dieser Ausstattung</p>
+      <p class="empty-body">Für das gewählte Merkmal gibt es keine passenden Räume.</p>
+      <button class="btn btn-secondary" type="button" id="reset-filter" data-od-id="reset-filter">Filter zurücksetzen</button>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var chips = document.querySelectorAll('.filter-chip');
+      var cards = document.querySelectorAll('.room-card');
+      var countNum = document.getElementById('result-count-num');
+      var empty = document.getElementById('empty-results');
+      var grid = document.querySelector('.room-grid');
+
+      function applyFilter(value) {
+        var visible = 0;
+        cards.forEach(function (card) {
+          var amenities = (card.getAttribute('data-amenities') || '').split(' ');
+          var show = value === 'alle' || amenities.indexOf(value) !== -1;
+          card.hidden = !show;
+          if (show) visible++;
+        });
+        countNum.textContent = String(visible);
+        empty.hidden = visible !== 0;
+        grid.hidden = visible === 0;
+      }
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          chips.forEach(function (c) {
+            c.classList.remove('selected');
+            c.setAttribute('aria-pressed', 'false');
+          });
+          chip.classList.add('selected');
+          chip.setAttribute('aria-pressed', 'true');
+          applyFilter(chip.getAttribute('data-value'));
+        });
+      });
+
+      document.getElementById('reset-filter').addEventListener('click', function () {
+        chips.forEach(function (c) {
+          var isAll = c.getAttribute('data-value') === 'alle';
+          c.classList.toggle('selected', isAll);
+          c.setAttribute('aria-pressed', isAll ? 'true' : 'false');
+        });
+        applyFilter('alle');
+      });
+    })();
+  </script>
+</body>
+</html>

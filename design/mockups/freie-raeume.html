@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raumbuchung — Freie Räume</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header" data-od-id="app-header">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" data-od-id="wordmark">Raumbuchung</a>
+      <nav class="main-nav" aria-label="Hauptnavigation" data-od-id="main-nav">
+        <a class="nav-item" href="index.html" data-od-id="nav-rooms">Räume</a>
+        <a class="nav-item active" href="freie-raeume.html" aria-current="page" data-od-id="nav-free-rooms">Freie Räume</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page" id="main" data-od-id="free-search-main">
+    <h1 class="page-title" data-od-id="page-title">Freie Räume suchen</h1>
+    <p class="page-subtitle" data-od-id="page-subtitle">Zeitraum und Mindestplatzanzahl wählen, um freie Räume zu finden.</p>
+
+    <section class="section" aria-label="Suchformular" data-od-id="search-form-section">
+      <form id="search-form" novalidate data-od-id="search-form">
+        <div class="free-search-row">
+          <div class="form-field" id="field-search-start" data-od-id="field-search-start">
+            <label class="field-label" for="search-start">Beginn</label>
+            <input class="form-control" type="datetime-local" id="search-start" name="search-start" value="2026-03-11T09:00" data-od-id="search-start">
+            <span class="field-message" id="msg-search-start" data-od-id="msg-search-start">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Bitte gib einen Beginn an.</span>
+            </span>
+          </div>
+
+          <div class="form-field" id="field-search-end" data-od-id="field-search-end">
+            <label class="field-label" for="search-end">Ende</label>
+            <input class="form-control" type="datetime-local" id="search-end" name="search-end" value="2026-03-11T10:00" data-od-id="search-end">
+            <span class="field-message" id="msg-search-end" data-od-id="msg-search-end">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="msg-search-end-text">Bitte gib ein Ende an.</span>
+            </span>
+          </div>
+
+          <div class="form-field" id="field-search-seats" data-od-id="field-search-seats">
+            <label class="field-label" for="search-seats">Mindestzahl Plätze</label>
+            <div class="seat-stepper" data-od-id="seat-stepper">
+              <button class="seat-stepper-btn" type="button" id="seats-minus" aria-label="Plätze verringern" data-od-id="seats-minus">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <input class="seat-stepper-value" type="number" id="search-seats" name="search-seats" min="1" max="999" step="1" value="2" inputmode="numeric" aria-label="Mindestzahl Plätze" data-od-id="search-seats">
+              <button class="seat-stepper-btn" type="button" id="seats-plus" aria-label="Plätze erhöhen" data-od-id="seats-plus">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-field" id="field-search-submit" data-od-id="field-search-submit">
+            <button class="btn btn-primary btn-block" type="submit" id="search-submit" data-od-id="search-submit">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="btn-label">Freie Räume suchen</span>
+            </button>
+          </div>
+        </div>
+
+        <p class="field-hint" data-od-id="timezone-hint">Zeiten in der Büro-Zeitzone (Europe/Berlin)</p>
+      </form>
+    </section>
+
+    <section class="section" id="results-section" hidden aria-label="Suchergebnisse" data-od-id="results-section">
+      <h2 class="section-title" data-od-id="results-title">Freie Räume</h2>
+      <p class="result-count" id="results-count" aria-live="polite" data-od-id="results-count"></p>
+      <div class="room-grid" id="results-grid" data-od-id="results-grid"></div>
+      <div class="empty-state" id="results-empty" hidden data-od-id="results-empty">
+        <svg class="empty-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <p class="empty-title">Keine freien Räume gefunden</p>
+        <p class="empty-body">Für den gewählten Zeitraum und die Mindestplatzanzahl ist kein Raum frei.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var ROOMS = [
+        { name: 'Besprechung Nord', seats: 8, tags: ['Beamer', 'Whiteboard', 'Konferenztelefon'] },
+        { name: 'Konferenzraum', seats: 12, tags: ['Beamer', 'Videokonferenz', 'Whiteboard', 'Flipchart'] },
+        { name: 'Meetingbox', seats: 4, tags: ['Whiteboard', 'Stehtisch'] },
+        { name: 'Kreativraum', seats: 6, tags: ['Whiteboard', 'Beamer', 'Sofa'] },
+        { name: 'Fokusraum', seats: 2, tags: ['Monitor', 'Höhenverstellbarer Tisch'] },
+        { name: 'Telefonzelle', seats: 1, tags: ['Telefon'] }
+      ];
+
+      var BUSY = [
+        { room: 'Besprechung Nord', start: '2026-03-11T09:00', end: '2026-03-11T11:00' },
+        { room: 'Konferenzraum', start: '2026-03-11T09:00', end: '2026-03-11T12:00' }
+      ];
+
+      var form = document.getElementById('search-form');
+      var start = document.getElementById('search-start');
+      var end = document.getElementById('search-end');
+      var seats = document.getElementById('search-seats');
+      var resultsSection = document.getElementById('results-section');
+      var resultsGrid = document.getElementById('results-grid');
+      var resultsCount = document.getElementById('results-count');
+      var resultsEmpty = document.getElementById('results-empty');
+      var submitBtn = document.getElementById('search-submit');
+      var msgEndText = document.getElementById('msg-search-end-text');
+
+      function minutes(iso) {
+        if (!iso) return null;
+        return new Date(iso).getTime() / 60000;
+      }
+
+      function setInvalid(id, valid) {
+        document.getElementById(id).classList.toggle('invalid', !valid);
+      }
+
+      function validate() {
+        var ok = true;
+        var startOk = !!start.value;
+        var endOk = !!end.value;
+        setInvalid('field-search-start', startOk);
+        if (!startOk) ok = false;
+
+        var withinRange = true;
+        if (start.value && end.value) {
+          var s = minutes(start.value);
+          var e = minutes(end.value);
+          if (e <= s) {
+            endOk = false;
+            withinRange = false;
+            msgEndText.textContent = 'Das Ende muss nach dem Beginn liegen.';
+          } else if (e - s > 8 * 60) {
+            endOk = false;
+            withinRange = false;
+            msgEndText.textContent = 'Eine Buchung darf höchstens 8 Stunden dauern.';
+          } else {
+            msgEndText.textContent = 'Bitte gib ein Ende an.';
+          }
+        }
+        setInvalid('field-search-end', endOk);
+        if (!endOk || !withinRange) ok = false;
+
+        return ok;
+      }
+
+      function clampSeats(v) {
+        var n = parseInt(v, 10);
+        if (isNaN(n)) n = 1;
+        if (n < 1) n = 1;
+        if (n > 999) n = 999;
+        return n;
+      }
+
+      document.getElementById('seats-minus').addEventListener('click', function () {
+        seats.value = String(clampSeats(seats.value) - 1);
+      });
+      document.getElementById('seats-plus').addEventListener('click', function () {
+        seats.value = String(clampSeats(seats.value) + 1);
+      });
+      seats.addEventListener('change', function () {
+        seats.value = String(clampSeats(seats.value));
+      });
+
+      function isBusy(roomName, s, e) {
+        for (var i = 0; i < BUSY.length; i++) {
+          var b = BUSY[i];
+          if (b.room === roomName && s < minutes(b.end) && e > minutes(b.start)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function renderResults() {
+        var s = minutes(start.value);
+        var e = minutes(end.value);
+        var minSeats = clampSeats(seats.value);
+
+        var free = ROOMS.filter(function (r) {
+          return r.seats >= minSeats && !isBusy(r.name, s, e);
+        });
+
+        resultsSection.hidden = false;
+        resultsCount.textContent = free.length === 1 ? '1 Raum' : free.length + ' Räume';
+        resultsEmpty.hidden = free.length !== 0;
+        resultsGrid.hidden = free.length === 0;
+
+        var html = '';
+        free.forEach(function (r, i) {
+          var period = '&datum=' + encodeURIComponent(start.value.slice(0, 10)) + '&start=' + encodeURIComponent(start.value.slice(11, 16));
+          html += '<article class="room-card" data-od-id="result-card-' + i + '">';
+          html += '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">';
+          html += '<a class="room-name" href="raum.html?raum=' + encodeURIComponent(r.name) + '" data-od-id="result-name-' + i + '">' + r.name + '</a>';
+          html += '<span class="free-badge" data-od-id="result-free-badge-' + i + '">Frei</span>';
+          html += '</div>';
+          html += '<div class="room-seats" data-od-id="result-seats-' + i + '">' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
+            '<span class="num">' + r.seats + (r.seats === 1 ? ' Platz' : ' Plätze') + '</span></div>';
+          html += '<div class="room-tags" data-od-id="result-tags-' + i + '">';
+          r.tags.forEach(function (t) {
+            html += '<span class="amenity-tag">' + t + '</span>';
+          });
+          html += '</div>';
+          html += '<div class="room-actions" data-od-id="result-actions-' + i + '">';
+          html += '<a class="btn btn-primary" href="buchung.html?raum=' + encodeURIComponent(r.name) + period + '" data-od-id="result-book-' + i + '">Buchen</a>';
+          html += '<a class="btn btn-secondary" href="raum.html?raum=' + encodeURIComponent(r.name) + '" data-od-id="result-view-' + i + '">Tag ansehen</a>';
+          html += '</div>';
+          html += '</article>';
+        });
+        resultsGrid.innerHTML = html;
+      }
+
+      form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        if (!validate()) return;
+
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        setTimeout(function () {
+          submitBtn.classList.remove('loading');
+          submitBtn.disabled = false;
+          renderResults();
+        }, 400);
+      });
+    })();
+  </script>
+</body>
+</html>

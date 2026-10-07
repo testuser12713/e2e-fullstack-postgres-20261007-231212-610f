@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raumbuchung — Buchung</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="sheet-backdrop" data-od-id="sheet-backdrop"></div>
+
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" data-od-id="booking-sheet">
+    <header class="sheet-header" data-od-id="sheet-header">
+      <h2 class="sheet-title" id="sheet-title" data-od-id="sheet-title">Buchung</h2>
+      <a class="icon-btn" href="index.html" aria-label="Schließen" data-od-id="sheet-close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </a>
+    </header>
+
+    <div class="sheet-body" data-od-id="sheet-body">
+      <div class="error-banner error" id="conflict-banner" role="alert" hidden data-od-id="conflict-banner">
+        <span class="banner-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </span>
+        <div class="banner-body">
+          <p class="banner-title">Buchung nicht möglich</p>
+          <p class="banner-message" id="conflict-message" data-od-id="conflict-message"></p>
+        </div>
+        <button class="icon-btn banner-dismiss" type="button" id="dismiss-banner" aria-label="Meldung schließen" data-od-id="dismiss-banner">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="error-banner success" id="success-banner" role="status" hidden data-od-id="success-banner">
+        <span class="banner-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </span>
+        <div class="banner-body">
+          <p class="banner-title">Buchung gespeichert</p>
+          <p class="banner-message">Die Buchung wurde angelegt und erscheint in der Tagesansicht des Raums.</p>
+        </div>
+      </div>
+
+      <form id="booking-form" novalidate data-od-id="booking-form">
+        <div class="form-field" id="field-room" data-od-id="field-room">
+          <label class="field-label" for="room">Raum</label>
+          <select class="form-control" id="room" name="room" data-od-id="input-room">
+            <option value="Besprechung Nord">Besprechung Nord · 8 Plätze</option>
+            <option value="Konferenzraum">Konferenzraum · 12 Plätze</option>
+            <option value="Meetingbox">Meetingbox · 4 Plätze</option>
+            <option value="Kreativraum">Kreativraum · 6 Plätze</option>
+            <option value="Fokusraum">Fokusraum · 2 Plätze</option>
+            <option value="Telefonzelle">Telefonzelle · 1 Platz</option>
+          </select>
+          <span class="field-message" id="msg-room" data-od-id="msg-room">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Bitte wähle einen Raum.</span>
+          </span>
+        </div>
+
+        <div class="form-field" id="field-booked-by" data-od-id="field-booked-by">
+          <label class="field-label" for="booked-by">Gebucht von</label>
+          <input class="form-control" type="text" id="booked-by" name="booked-by" placeholder="z. B. Anna Müller" autocomplete="name" data-od-id="input-booked-by">
+          <span class="field-message" id="msg-booked-by" data-od-id="msg-booked-by">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Bitte gib an, wer den Raum bucht.</span>
+          </span>
+        </div>
+
+        <div class="form-field" id="field-title" data-od-id="field-title">
+          <label class="field-label" for="title">Titel</label>
+          <input class="form-control" type="text" id="title" name="title" placeholder="z. B. Sprint Planning" data-od-id="input-title">
+          <span class="field-message" id="msg-title" data-od-id="msg-title">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Bitte gib einen Titel an.</span>
+          </span>
+        </div>
+
+        <div class="datetime-pair" data-od-id="datetime-pair">
+          <div class="form-field" id="field-start" data-od-id="field-start">
+            <label class="field-label" for="start">Beginn</label>
+            <input class="form-control" type="datetime-local" id="start" name="start" data-od-id="input-start">
+            <span class="field-message" id="msg-start" data-od-id="msg-start">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Bitte gib einen Beginn an.</span>
+            </span>
+          </div>
+
+          <div class="form-field" id="field-end" data-od-id="field-end">
+            <label class="field-label" for="end">Ende</label>
+            <input class="form-control" type="datetime-local" id="end" name="end" data-od-id="input-end">
+            <span class="field-message" id="msg-end" data-od-id="msg-end">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="msg-end-text">Bitte gib ein Ende an.</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="quick-fill" data-od-id="quick-fill">
+          <button class="quick-fill-chip" type="button" id="heute-chip" data-od-id="heute-chip">Heute</button>
+        </div>
+
+        <p class="field-hint" data-od-id="timezone-hint">Zeiten in der Büro-Zeitzone (Europe/Berlin)</p>
+      </form>
+    </div>
+
+    <footer class="sheet-footer" data-od-id="sheet-footer">
+      <a class="btn btn-secondary" href="index.html" data-od-id="cancel-btn">Abbrechen</a>
+      <button class="btn btn-primary" type="submit" form="booking-form" id="save-btn" data-od-id="save-btn">
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="btn-label">Buchung speichern</span>
+      </button>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var form = document.getElementById('booking-form');
+      var room = document.getElementById('room');
+      var bookedBy = document.getElementById('booked-by');
+      var title = document.getElementById('title');
+      var start = document.getElementById('start');
+      var end = document.getElementById('end');
+      var conflictBanner = document.getElementById('conflict-banner');
+      var conflictMessage = document.getElementById('conflict-message');
+      var successBanner = document.getElementById('success-banner');
+      var saveBtn = document.getElementById('save-btn');
+      var msgEndText = document.getElementById('msg-end-text');
+
+      var EXISTING = [
+        { room: 'Besprechung Nord', start: '2026-03-11T09:00', end: '2026-03-11T11:00', title: 'Sprint Planning' },
+        { room: 'Besprechung Nord', start: '2026-03-11T11:00', end: '2026-03-11T12:30', title: 'Bewerbungsgespräch' },
+        { room: 'Besprechung Nord', start: '2026-03-11T13:00', end: '2026-03-11T14:00', title: '1:1 Review' },
+        { room: 'Besprechung Nord', start: '2026-03-11T15:00', end: '2026-03-11T17:00', title: 'Kunden-Workshop' }
+      ];
+
+      var params = new URLSearchParams(window.location.search);
+      var prefilledRoom = params.get('raum');
+      if (prefilledRoom) {
+        var opts = room.options;
+        for (var i = 0; i < opts.length; i++) {
+          if (opts[i].value === prefilledRoom) { room.value = prefilledRoom; break; }
+        }
+      }
+
+      var defaultDate = params.get('datum') || '2026-03-11';
+      var defaultStart = params.get('start') ? (defaultDate + 'T' + params.get('start')) : (defaultDate + 'T14:00');
+      start.value = defaultStart;
+      end.value = defaultDate + 'T15:00';
+
+      if (params.get('edit') === '1') {
+        document.getElementById('sheet-title').textContent = 'Buchung bearbeiten';
+        document.title = 'Raumbuchung — Buchung bearbeiten';
+        title.value = 'Sprint Planning';
+        bookedBy.value = 'Anna';
+      }
+
+      var touched = {};
+
+      function setInvalid(fieldId, valid) {
+        var field = document.getElementById(fieldId);
+        field.classList.toggle('invalid', !valid);
+      }
+
+      function minutes(iso) {
+        if (!iso) return null;
+        var d = new Date(iso);
+        return d.getTime() / 60000;
+      }
+
+      function validate(showAll) {
+        var ok = true;
+
+        if (showAll || touched['booked-by']) {
+          var byOk = bookedBy.value.trim().length > 0;
+          setInvalid('field-booked-by', byOk);
+          if (!byOk) ok = false;
+        }
+        if (showAll || touched['title']) {
+          var titleOk = title.value.trim().length > 0;
+          setInvalid('field-title', titleOk);
+          if (!titleOk) ok = false;
+        }
+        if (showAll || touched['start']) {
+          var startOk = !!start.value;
+          setInvalid('field-start', startOk);
+          if (!startOk) ok = false;
+        }
+
+        var endValue = end.value;
+        var startValue = start.value;
+        var endOk = !!endValue;
+        var endAfterStart = true;
+        var withinEight = true;
+
+        if (showAll || touched['end']) {
+          if (!endValue) {
+            endOk = false;
+          }
+        }
+
+        if (endValue && startValue) {
+          var s = minutes(startValue);
+          var e = minutes(endValue);
+          if (e <= s) {
+            endAfterStart = false;
+            endOk = false;
+            msgEndText.textContent = 'Das Ende muss nach dem Beginn liegen.';
+          } else if (e - s > 8 * 60) {
+            withinEight = false;
+            endOk = false;
+            msgEndText.textContent = 'Eine Buchung darf höchstens 8 Stunden dauern.';
+          } else {
+            msgEndText.textContent = 'Bitte gib ein Ende an.';
+          }
+        }
+
+        setInvalid('field-end', endOk);
+
+        if (!endOk || !endAfterStart || !withinEight) ok = false;
+
+        return ok;
+      }
+
+      function markTouched(id) {
+        touched[id] = true;
+      }
+
+      ['booked-by', 'title', 'start', 'end'].forEach(function (id) {
+        var el = document.getElementById(id);
+        el.addEventListener('blur', function () {
+          markTouched(id);
+          validate(false);
+        });
+      });
+
+      document.getElementById('heute-chip').addEventListener('click', function () {
+        var now = new Date('2026-03-11T09:35:00');
+        now.setMinutes(0, 0, 0);
+        now.setHours(now.getHours() + 1);
+        var s = now;
+        var e = new Date(s.getTime() + 60 * 60000);
+        function pad(n) { return ('0' + n).slice(-2); }
+        function fmt(d) {
+          return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        }
+        start.value = fmt(s);
+        end.value = fmt(e);
+        markTouched('start');
+        markTouched('end');
+        validate(false);
+      });
+
+      document.getElementById('dismiss-banner').addEventListener('click', function () {
+        conflictBanner.hidden = true;
+      });
+
+      function findConflict(roomName, s, e) {
+        for (var i = 0; i < EXISTING.length; i++) {
+          var ex = EXISTING[i];
+          if (ex.room !== roomName) continue;
+          if (s < minutes(ex.end) && e > minutes(ex.start)) {
+            return ex;
+          }
+        }
+        return null;
+      }
+
+      function pad(n) { return ('0' + n).slice(-2); }
+      function fmtTime(m) {
+        var d = new Date(m * 60000);
+        return pad(d.getHours()) + ':' + pad(d.getMinutes());
+      }
+
+      form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        conflictBanner.hidden = true;
+        successBanner.hidden = true;
+
+        if (!validate(true)) {
+          return;
+        }
+
+        var conflict = findConflict(room.value, minutes(start.value), minutes(end.value));
+        if (conflict) {
+          conflictMessage.textContent =
+            'Der Raum „' + conflict.room + '“ ist in diesem Zeitraum bereits gebucht: „' + conflict.title +
+            '“ (' + fmtTime(minutes(conflict.start)) + ' – ' + fmtTime(minutes(conflict.end)) + ').';
+          conflictBanner.hidden = false;
+          conflictBanner.focus();
+          return;
+        }
+
+        saveBtn.classList.add('loading');
+        saveBtn.disabled = true;
+        setTimeout(function () {
+          saveBtn.classList.remove('loading');
+          saveBtn.disabled = false;
+          successBanner.hidden = false;
+        }, 600);
+      });
+    })();
+  </script>
+</body>
+</html>
