@@ -1,7 +1,6 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
 import BookingFormPage from './pages/BookingFormPage'
 import FreeRoomsPage from './pages/FreeRoomsPage'
-import HomePage from './pages/HomePage'
 import RoomDayPage from './pages/RoomDayPage'
 import RoomListPage from './pages/RoomListPage'
 
@@ -22,7 +21,7 @@ export default function App() {
             Raumbuchung
           </NavLink>
           <nav className="app-nav" aria-label="Hauptnavigation">
-            <NavLink to="/rooms" className={navLinkClass}>
+            <NavLink to="/" className={navLinkClass}>
               Räume
             </NavLink>
             <NavLink to="/free" className={navLinkClass}>
@@ -34,12 +33,12 @@ export default function App() {
 
       <main className="app-main container">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<RoomListPage />} />
           <Route path="/rooms" element={<RoomListPage />} />
           <Route path="/rooms/:roomId" element={<RoomDayPage />} />
           <Route path="/free" element={<FreeRoomsPage />} />
           <Route path="/book" element={<BookingFormPage />} />
-          <Route path="*" element={<HomePage />} />
+          <Route path="*" element={<RoomListPage />} />
         </Routes>
       </main>
     </div>
