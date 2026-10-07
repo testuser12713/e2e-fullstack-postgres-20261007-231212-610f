@@ -1,0 +1,185 @@
+/* RoomListPage — page-scoped styles. Tokens come from src/styles.css (DESIGN.md). */
+
+.room-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Header: title + subtitle on the left, disabled create control on the right. */
+.room-list__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.room-list__title {
+  font-size: 32px;
+  font-weight: var(--heading-weight);
+  letter-spacing: -0.01em;
+  color: var(--color-fg);
+}
+
+.room-list__subtitle {
+  margin-top: var(--space-1);
+  font-size: 15px;
+  color: var(--color-muted);
+}
+
+.room-list__coming-soon {
+  flex: 0 0 auto;
+}
+
+/* Amenity filter chip row + live result count. */
+.room-list__filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.amenity-filter {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  padding: 2px 0 6px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.amenity-filter::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .amenity-filter {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    padding: 0;
+  }
+}
+
+.filter-chip {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  margin: 6px 0;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-muted);
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease-out,
+    border-color 120ms ease-out,
+    color 120ms ease-out;
+}
+
+.filter-chip:hover {
+  border-color: var(--color-border-strong);
+}
+
+.filter-chip[aria-pressed='true'] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.filter-chip:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.result-count {
+  align-self: flex-end;
+  font-size: 13px;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Room grid: 1 / 2 / 3 columns, cards stretch to equal height. */
+.room-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .room-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .room-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Loading skeletons keep the grid's shape to avoid layout shift. */
+.room-list__skeletons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .room-list__skeletons {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .room-list__skeletons {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.room-list__skeleton {
+  height: 180px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunken);
+  animation: room-list-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes room-list-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* State actions. */
+.room-list__empty-icon {
+  color: var(--color-muted);
+}
+
+.room-list__empty-action {
+  margin-top: var(--space-1);
+}
+
+.room-list__error-action {
+  margin-top: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-list__skeleton {
+    animation: none;
+  }
+}
