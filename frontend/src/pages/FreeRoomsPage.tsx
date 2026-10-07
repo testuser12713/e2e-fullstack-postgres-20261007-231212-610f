@@ -36,8 +36,11 @@ function officeParts(base: Date): { date: string; hour: number; minute: number }
 
 function nextFullHourInput(now: Date = new Date()): string {
   const { date, hour, minute } = officeParts(now)
-  if (minute === 0 && hour < 24) {
+  if (minute === 0) {
     return `${date}T${pad(hour)}:00`
+  }
+  if (hour < 23) {
+    return `${date}T${pad(hour + 1)}:00`
   }
   const next = new Date(`${date}T00:00:00Z`)
   next.setUTCDate(next.getUTCDate() + 1)
@@ -60,6 +63,28 @@ function wallMsToLocal(ms: number): string {
 
 function addHourInput(local: string): string {
   return wallMsToLocal(localToWallMs(local) + 60 * 60 * 1000)
+}
+
+/** Splits a wall-clock `YYYY-MM-DDTHH:mm` value into its date and time parts. */
+function splitLocal(local: string): { date: string; time: string } {
+  const [date = '', time = ''] = local.split('T')
+  return { date, time: time.slice(0, 5) }
+}
+
+/** Renders a `YYYY-MM-DD` day as the office format 'Mi, 11.03.2026'. */
+function formatDateLabel(datePart: string): string {
+  const [year, month, day] = datePart.split('-').map(Number)
+  if (!year || !month || !day) return ''
+  const noon = new Date(Date.UTC(year, month - 1, day, 12))
+  return new Intl.DateTimeFormat('de-DE', {
+    weekday: 'short',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+    .format(noon)
+    .replace('.', '')
 }
 
 function officeOffsetMinutes(instant: Date): number {
@@ -170,6 +195,170 @@ function SearchIcon() {
   )
 }
 
+function CalendarIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  )
+}
+
+function ClockIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  )
+}
+
+interface DateTimeFieldProps {
+  id: string
+  label: string
+  value: string
+  onChange(next: string): void
+  onBlur(): void
+  error?: string
+  showError: boolean
+}
+
+/**
+ * DESIGN.md DateTimeField shell. The visible date is always the office format
+ * ('Mi, 11.03.2026') and the time is a zero-padded 24h value ('09:00'), so the
+ * browser's locale-driven US formatting is never shown. A native date/time picker
+ * is opened from each segment; the user-entered German-formatted value stays.
+ */
+function DateTimeField({
+  id,
+  label,
+  value,
+  onChange,
+  onBlur,
+  error,
+  showError,
+}: DateTimeFieldProps) {
+  const dateRef = useRef<HTMLInputElement>(null)
+  const timeRef = useRef<HTMLInputElement>(null)
+  const { date, time } = splitLocal(value)
+  const errorId = `${id}-error`
+
+  function openPicker(ref: React.RefObject<HTMLInputElement | null>): void {
+    const input = ref.current
+    if (!input) return
+    if (typeof input.showPicker === 'function') {
+      try {
+        input.showPicker()
+        return
+      } catch {
+        // Not allowed in this context — fall back to focusing the native control.
+      }
+    }
+    input.focus()
+  }
+
+  return (
+    <div className="form-field free-rooms__field free-rooms__field--grow">
+      <span className="form-field__label">{label}</span>
+      <div
+        className="free-rooms__dt"
+        role="group"
+        aria-label={label}
+        aria-invalid={showError}
+        aria-describedby={showError ? errorId : undefined}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            onBlur()
+          }
+        }}
+      >
+        <button
+          type="button"
+          className="free-rooms__dt-segment"
+          onClick={() => openPicker(dateRef)}
+          aria-label={`${label}: ${formatDateLabel(date)} (Datum ändern)`}
+        >
+          <CalendarIcon />
+          <span className="free-rooms__dt-value" data-testid={`${id}-date`}>
+            {formatDateLabel(date)}
+          </span>
+        </button>
+        <span className="free-rooms__dt-divider" aria-hidden="true" />
+        <button
+          type="button"
+          className="free-rooms__dt-segment"
+          onClick={() => openPicker(timeRef)}
+          aria-label={`${label}: ${time} (Uhrzeit ändern)`}
+        >
+          <ClockIcon />
+          <span
+            className="free-rooms__dt-value free-rooms__dt-value--time"
+            data-testid={`${id}-time`}
+          >
+            {time}
+          </span>
+        </button>
+        <input
+          ref={dateRef}
+          type="date"
+          className="free-rooms__dt-native"
+          value={date}
+          tabIndex={-1}
+          aria-hidden="true"
+          data-testid={`${id}-date-input`}
+          onChange={(event) => {
+            const next = event.target.value
+            if (next) onChange(`${next}T${time}`)
+          }}
+        />
+        <input
+          ref={timeRef}
+          type="time"
+          className="free-rooms__dt-native"
+          value={time}
+          tabIndex={-1}
+          aria-hidden="true"
+          data-testid={`${id}-time-input`}
+          onChange={(event) => {
+            const next = event.target.value
+            if (next) onChange(`${date}T${next}`)
+          }}
+        />
+      </div>
+      {showError && error ? (
+        <span className="form-field__message form-field__message--error" id={errorId}>
+          <AlertIcon />
+          {error}
+        </span>
+      ) : null}
+    </div>
+  )
+}
+
 export default function FreeRoomsPage() {
   const [start, setStart] = useState<string>(() => nextFullHourInput())
   const [end, setEnd] = useState<string>(() => addHourInput(nextFullHourInput()))
@@ -262,55 +451,25 @@ export default function FreeRoomsPage() {
       <section className="free-rooms__section" aria-label="Suchformular">
         <form id="free-rooms-form" noValidate onSubmit={handleSubmit}>
           <div className="free-rooms__search-row">
-            <div className="form-field free-rooms__field free-rooms__field--grow">
-              <label className="form-field__label" htmlFor="free-rooms-start">
-                Beginn
-              </label>
-              <input
-                id="free-rooms-start"
-                className="input"
-                type="datetime-local"
-                value={start}
-                aria-invalid={showStartError}
-                aria-describedby={showStartError ? 'free-rooms-start-error' : undefined}
-                onChange={(event) => setStart(event.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, start: true }))}
-              />
-              {showStartError ? (
-                <span
-                  className="form-field__message form-field__message--error"
-                  id="free-rooms-start-error"
-                >
-                  <AlertIcon />
-                  {errors.start}
-                </span>
-              ) : null}
-            </div>
+            <DateTimeField
+              id="free-rooms-start"
+              label="Beginn"
+              value={start}
+              onChange={setStart}
+              onBlur={() => setTouched((prev) => ({ ...prev, start: true }))}
+              error={errors.start}
+              showError={showStartError}
+            />
 
-            <div className="form-field free-rooms__field free-rooms__field--grow">
-              <label className="form-field__label" htmlFor="free-rooms-end">
-                Ende
-              </label>
-              <input
-                id="free-rooms-end"
-                className="input"
-                type="datetime-local"
-                value={end}
-                aria-invalid={showEndError}
-                aria-describedby={showEndError ? 'free-rooms-end-error' : undefined}
-                onChange={(event) => setEnd(event.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, end: true }))}
-              />
-              {showEndError ? (
-                <span
-                  className="form-field__message form-field__message--error"
-                  id="free-rooms-end-error"
-                >
-                  <AlertIcon />
-                  {errors.end}
-                </span>
-              ) : null}
-            </div>
+            <DateTimeField
+              id="free-rooms-end"
+              label="Ende"
+              value={end}
+              onChange={setEnd}
+              onBlur={() => setTouched((prev) => ({ ...prev, end: true }))}
+              error={errors.end}
+              showError={showEndError}
+            />
 
             <div className="form-field free-rooms__field free-rooms__field--fixed">
               <label className="form-field__label" htmlFor="free-rooms-seats">
