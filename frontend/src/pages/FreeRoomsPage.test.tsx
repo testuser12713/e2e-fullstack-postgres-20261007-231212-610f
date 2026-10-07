@@ -32,8 +32,18 @@ function renderPage() {
 }
 
 function fillRange(startValue: string, endValue: string) {
-  fireEvent.change(screen.getByLabelText('Beginn'), { target: { value: startValue } })
-  fireEvent.change(screen.getByLabelText('Ende'), { target: { value: endValue } })
+  fireEvent.change(screen.getByTestId('free-rooms-start-date-input'), {
+    target: { value: startValue.slice(0, 10) },
+  })
+  fireEvent.change(screen.getByTestId('free-rooms-start-time-input'), {
+    target: { value: startValue.slice(11, 16) },
+  })
+  fireEvent.change(screen.getByTestId('free-rooms-end-date-input'), {
+    target: { value: endValue.slice(0, 10) },
+  })
+  fireEvent.change(screen.getByTestId('free-rooms-end-time-input'), {
+    target: { value: endValue.slice(11, 16) },
+  })
 }
 
 function requestUrl(fetchMock: ReturnType<typeof vi.fn>): URL {
@@ -57,6 +67,42 @@ describe('FreeRoomsPage', () => {
       screen.queryByText('Das Ende muss nach dem Beginn liegen.'),
     ).not.toBeInTheDocument()
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('shows German 24-hour date and time and never a US-formatted value', () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    renderPage()
+    fillRange('2026-03-11T09:00', '2026-03-11T10:00')
+
+    expect(screen.getByTestId('free-rooms-start-date')).toHaveTextContent('Mi, 11.03.2026')
+    expect(screen.getByTestId('free-rooms-start-time')).toHaveTextContent('09:00')
+    expect(screen.getByTestId('free-rooms-end-date')).toHaveTextContent('Mi, 11.03.2026')
+    expect(screen.getByTestId('free-rooms-end-time')).toHaveTextContent('10:00')
+    expect(screen.queryByText(/AM|PM/)).not.toBeInTheDocument()
+  })
+
+  it('prefills start at the next full hour and end exactly one hour later', () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+
+    renderPage()
+
+    const startDate = screen.getByTestId('free-rooms-start-date').textContent ?? ''
+    const startTime = screen.getByTestId('free-rooms-start-time').textContent ?? ''
+    const endDate = screen.getByTestId('free-rooms-end-date').textContent ?? ''
+    const endTime = screen.getByTestId('free-rooms-end-time').textContent ?? ''
+
+    expect(startTime).toMatch(/^\d{2}:00$/)
+
+    const parse = (dateLabel: string, time: string): number => {
+      const [day, month, year] = dateLabel.replace(/^\w+, /, '').split('.').map(Number)
+      const [hours, minutes] = time.split(':').map(Number)
+      return Date.UTC(year, month - 1, day, hours, minutes)
+    }
+
+    expect(parse(endDate, endTime) - parse(startDate, startTime)).toBe(60 * 60 * 1000)
   })
 
   it('requests free rooms for the chosen range and lists exactly the matches', async () => {
